@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="OpenFrame.Player.Core/OpenFrame.Player.Core.csproj" Id="12e971b6-b534-45c0-91f8-286ac6d5c711" />
+  <Project Path="OpenFrame.Player.Infrastructure/OpenFrame.Player.Infrastructure.csproj" Id="3e700562-61e3-4d36-94b1-64cd2c3947b2" />
+  <Project Path="OpenFrame.Player.Tests/OpenFrame.Player.Tests.csproj" Id="f821380a-693b-44b3-876c-88c17ed3a8cc" />
+  <Project Path="OpenFrame.Player.UI/OpenFrame.Player.UI.csproj" />
+</Solution>
