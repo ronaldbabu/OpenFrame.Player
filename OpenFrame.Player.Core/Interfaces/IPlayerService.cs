@@ -1,6 +1,8 @@
-﻿namespace OpenFrame.Player.Core.Interfaces;
+using OpenFrame.Player.Core.Enums;
 
-public interface IPlayerService
+namespace OpenFrame.Player.Core.Interfaces;
+
+public interface IPlayerService : IDisposable
 {
     void Open(string path);
 
@@ -15,4 +17,14 @@ public interface IPlayerService
     void SetVolume(int volume);
 
     bool IsPlaying { get; }
+
+    PlaybackState State { get; }
+
+    long PositionMilliseconds { get; }
+
+    long DurationMilliseconds { get; }
+
+    int Volume { get; }
+
+    string? CurrentMediaPath { get; }
 }
