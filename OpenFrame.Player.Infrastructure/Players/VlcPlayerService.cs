@@ -29,6 +29,7 @@ public sealed class VlcPlayerService : IPlayerService
 
         LibVLC = new LibVLC();
         MediaPlayer = new MediaPlayer(LibVLC);
+        MediaPlayer.EnableMouseInput = false;
     }
 
     public void Open(string path)

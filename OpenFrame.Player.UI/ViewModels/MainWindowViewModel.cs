@@ -86,6 +86,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             if (SetProperty(ref _playbackState, value))
             {
                 OnPropertyChanged(nameof(PlayPauseText));
+                OnPropertyChanged(nameof(PlayPauseIcon));
                 OnPropertyChanged(nameof(StatusMessage));
                 NotifyCommandStateChanged();
             }
@@ -93,6 +94,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
     }
 
     public string PlayPauseText => PlaybackState == PlaybackState.Playing ? "Pause" : "Play";
+
+    public string PlayPauseIcon => PlaybackState == PlaybackState.Playing ? "\uE769" : "\uE768";
 
     public string StatusMessage
         => HasMedia
