@@ -57,12 +57,13 @@ UI owns WPF application startup, windows, view models, controls, resources, and 
 
 `MainWindow.xaml` contains:
 
-- `File > Open` menu;
+- custom dark header bar with Open and Full Screen icons;
 - VLC `VideoView`;
-- bottom playback bar;
-- Open, Play/Pause, Stop, seek, volume, status, and error bindings.
+- dark media-player style bottom playback bar using `#d97757` as the accent color;
+- icon buttons for Open, Play/Pause, Stop, Full Screen, seek, volume, status, and error bindings.
+- video-surface click handling for Play/Pause toggle.
 
-`MainWindow.xaml.cs` is intentionally thin. It creates the VLC player, creates `MainWindowViewModel`, assigns the VLC media player to the `VideoView`, refreshes playback state on a timer, and disposes resources when the window closes.
+`MainWindow.xaml.cs` is intentionally thin. It creates the VLC player, creates `MainWindowViewModel`, assigns the VLC media player to the `VideoView`, refreshes playback state on a timer, handles fullscreen window chrome, handles video-surface click-to-play-pause behavior, handles click-to-seek timeline behavior, and disposes resources when the window closes.
 
 `MainWindowViewModel` owns:
 
@@ -90,6 +91,7 @@ Tests focus on view model behavior without launching WPF:
 - stop behavior;
 - volume clamping;
 - seek behavior.
+- fullscreen and timeline click behavior remain WPF interaction concerns and should be smoke-tested manually unless a UI automation layer is added.
 
 ## Dependency Direction
 
@@ -117,10 +119,18 @@ Infrastructure -/-> UI
 4. `MainWindow` creates `VlcPlayerService`.
 5. `MainWindow` creates `MainWindowViewModel` with the player service and WPF file dialog service.
 6. `MainWindow` assigns the VLC `MediaPlayer` to the WPF `VideoView`.
-7. The user chooses a media file through `File > Open` or the `Open` button.
+7. The user chooses a media file through the header or transport-bar Open icon.
 8. The view model validates the selected file and calls the playback boundary.
 9. Infrastructure opens the media through VLC.
 10. UI state updates as playback starts, pauses, stops, seeks, or fails.
+
+Fullscreen is a view-level concern. The main window stores the previous window state/style/placement, enters borderless fullscreen using the current monitor bounds, hides the custom header bar, hides the control bar, removes the video border, and exits with `Esc` or the fullscreen button.
+
+Fullscreen controls are intentionally transient. Mouse movement reveals the control bar for a short period, then a timer hides it again.
+
+Click-to-seek is also handled at the WPF layer. The seek slider converts the click position into a timeline percentage and writes the target value back to the bound view model position.
+
+Click-to-play-pause is handled by the video surface and delegates to the same `PlayPauseCommand` used by the transport button. VLC mouse input is disabled on the media player, and the native video child window is subclassed so mouse clicks and movement are still captured when the WPF `VideoView` hosts VLC in an `HwndHost`.
 
 ## Resource Lifetime
 

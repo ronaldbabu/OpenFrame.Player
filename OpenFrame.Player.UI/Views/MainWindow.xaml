@@ -9,18 +9,119 @@
         Height="600"
         Width="1000"
         MinHeight="420"
-        MinWidth="720">
+        MinWidth="760"
+        Background="#050608"
+        MouseMove="OnWindowMouseMove"
+        PreviewKeyDown="OnPreviewKeyDown">
 
-    <DockPanel Background="#101214">
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Open"
-                          Command="{Binding OpenCommand}"/>
-            </MenuItem>
-        </Menu>
+    <Window.Resources>
+        <SolidColorBrush x:Key="AccentBrush" Color="#D97757"/>
+        <SolidColorBrush x:Key="AccentHoverBrush" Color="#E48A6D"/>
+        <SolidColorBrush x:Key="PanelBrush" Color="#15191E"/>
+        <SolidColorBrush x:Key="ButtonBrush" Color="#252A30"/>
+        <SolidColorBrush x:Key="ButtonBorderBrush" Color="#3A414A"/>
 
-        <Grid DockPanel.Dock="Bottom"
-              Background="#1B1E22">
+        <Style x:Key="PlayerButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Foreground" Value="#F3F4F6"/>
+            <Setter Property="Background" Value="{StaticResource ButtonBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonChrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonChrome" Property="Opacity" Value="0.45"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#303640"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TransportButtonStyle" TargetType="Button" BasedOn="{StaticResource PlayerButtonStyle}">
+            <Setter Property="Width" Value="46"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource AccentHoverBrush}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource AccentHoverBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Slider">
+            <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Background" Value="#3A414A"/>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel Background="#050608">
+        <Border x:Name="MainHeader"
+                DockPanel.Dock="Top"
+                Background="#15191E"
+                BorderBrush="{StaticResource AccentBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="12,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Center"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           Foreground="#F3F4F6"
+                           Text="OpenFrame Player"/>
+
+                <Button Grid.Column="1"
+                        Style="{StaticResource PlayerButtonStyle}"
+                        Command="{Binding OpenCommand}"
+                        Content="&#xE8E5;"
+                        ToolTip="Open"/>
+
+                <Button Grid.Column="2"
+                        Style="{StaticResource PlayerButtonStyle}"
+                        Click="OnToggleFullScreenClick"
+                        Content="&#xE740;"
+                        ToolTip="Full Screen"/>
+            </Grid>
+        </Border>
+
+        <Border x:Name="ControlBar"
+                DockPanel.Dock="Bottom"
+                Background="#15191E"
+                BorderBrush="#2C323A"
+                BorderThickness="0,1,0,0"
+                Padding="14,10,14,12">
+            <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -44,8 +145,9 @@
             </TextBlock>
 
             <Grid Grid.Row="1"
-                  Margin="12,10,12,12">
+                  Margin="0,8,0,0">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -55,58 +157,77 @@
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="0"
-                        MinWidth="72"
-                        Margin="0,0,8,0"
-                        Padding="10,5"
+                        Style="{StaticResource PlayerButtonStyle}"
                         Command="{Binding OpenCommand}"
-                        Content="Open"/>
+                        Content="&#xE8E5;"
+                        ToolTip="Open"/>
 
                 <Button Grid.Column="1"
-                        MinWidth="72"
-                        Margin="0,0,8,0"
-                        Padding="10,5"
+                        Style="{StaticResource TransportButtonStyle}"
                         Command="{Binding PlayPauseCommand}"
-                        Content="{Binding PlayPauseText}"/>
+                        Content="{Binding PlayPauseIcon}"
+                        ToolTip="{Binding PlayPauseText}"/>
 
                 <Button Grid.Column="2"
-                        MinWidth="72"
-                        Margin="0,0,12,0"
-                        Padding="10,5"
+                        Style="{StaticResource PlayerButtonStyle}"
                         Command="{Binding StopCommand}"
-                        Content="Stop"/>
+                        Content="&#xE71A;"
+                        ToolTip="Stop"/>
 
-                <StackPanel Grid.Column="3"
-                            Margin="0,0,12,0">
+                <Button x:Name="FullScreenButton"
+                        Grid.Column="3"
+                        Style="{StaticResource PlayerButtonStyle}"
+                        Click="OnToggleFullScreenClick"
+                        Content="&#xE740;"
+                        ToolTip="Full Screen"/>
+
+                <StackPanel Grid.Column="4"
+                            Margin="4,0,14,0">
                     <TextBlock Foreground="#D8DEE9"
                                FontSize="12"
                                Text="{Binding SelectedMediaName, TargetNullValue=No media selected}"
                                TextTrimming="CharacterEllipsis"/>
-                    <Slider Margin="0,4,0,0"
+                    <Slider x:Name="SeekSlider"
+                            Margin="0,5,0,0"
+                            Height="22"
                             IsEnabled="{Binding HasMedia}"
                             Minimum="0"
                             Maximum="{Binding DurationMilliseconds}"
+                            PreviewMouseLeftButtonDown="OnSeekSliderPreviewMouseLeftButtonDown"
                             Value="{Binding PositionMilliseconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <TextBlock Foreground="#A7B0BB"
                                FontSize="11"
                                Text="{Binding StatusMessage}"/>
                 </StackPanel>
 
-                <TextBlock Grid.Column="4"
+                <TextBlock Grid.Column="5"
                            Margin="0,0,8,0"
                            VerticalAlignment="Center"
-                           Foreground="#D8DEE9"
-                           Text="Volume"/>
+                           FontFamily="Segoe MDL2 Assets"
+                           FontSize="15"
+                           Foreground="{StaticResource AccentBrush}"
+                           Text="&#xE767;"
+                           ToolTip="Volume"/>
 
-                <Slider Grid.Column="5"
+                <Slider Grid.Column="6"
                         Minimum="0"
                         Maximum="100"
+                        Height="22"
                         VerticalAlignment="Center"
                         Value="{Binding Volume, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
-        </Grid>
+            </Grid>
+        </Border>
 
-        <Border Background="Black">
-            <vlc:VideoView x:Name="VideoView"/>
+        <Border x:Name="VideoSurface"
+                Background="Black"
+                BorderBrush="#0B0D10"
+                BorderThickness="1"
+                MouseLeftButtonDown="OnVideoSurfaceMouseLeftButtonDown"
+                PreviewMouseLeftButtonDown="OnVideoSurfaceMouseLeftButtonDown">
+            <vlc:VideoView x:Name="VideoView"
+                           MouseLeftButtonDown="OnVideoSurfaceMouseLeftButtonDown"
+                           PreviewMouseLeftButtonDown="OnVideoSurfaceMouseLeftButtonDown"/>
         </Border>
     </DockPanel>
 </Window>
